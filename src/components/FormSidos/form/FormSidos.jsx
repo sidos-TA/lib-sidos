@@ -17,7 +17,7 @@ const FormSidos = ({ children, form, ...props }) => {
         form,
       }}
     >
-      <Form layout="vertical">
+      <Form layout="vertical" autoComplete="off" {...props}>
         {children}
 
         <BtnSidos

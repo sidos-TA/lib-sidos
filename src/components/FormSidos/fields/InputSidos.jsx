@@ -29,13 +29,6 @@ const InputSidos = ({
   return (
     <FormItemSidos name={name} label={label} required={required}>
       <InputSidosWrapper
-        onChange={(val) => {
-          if (props?.onChange) {
-            props?.onChange(val);
-          } else {
-            setValue(xs ? val : val?.target?.value);
-          }
-        }}
         {...props}
         {...(xs && {
           clearable: true,
@@ -45,6 +38,14 @@ const InputSidos = ({
             padding: "8px 0 8px 8px",
           },
         })}
+        onChange={(val) => {
+          const value = xs ? val : val?.target?.value;
+          if (props?.onChange) {
+            props?.onChange(value);
+          } else {
+            setValue(value);
+          }
+        }}
       />
     </FormItemSidos>
   );
