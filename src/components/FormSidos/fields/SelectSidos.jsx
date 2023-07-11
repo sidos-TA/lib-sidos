@@ -22,7 +22,7 @@ const SelectSidos = ({ name, label, required, ...props }) => {
   };
 
   useEffect(() => {
-    if (xs && props?.listOptions) {
+    if (props?.listOptions && name) {
       form?.setFieldValue(name, valueInput);
     }
   }, [JSON.stringify(valueInput)]);
@@ -75,7 +75,7 @@ const SelectSidos = ({ name, label, required, ...props }) => {
                         arrow={false}
                         key={data?.value}
                         onClick={() => {
-                          setValueInput(data?.label);
+                          setValueInput(data?.value);
                           setVisibleSelectMobile(false);
                         }}
                       >
@@ -96,7 +96,22 @@ const SelectSidos = ({ name, label, required, ...props }) => {
 
   return (
     <FormItemSidos name={name} label={label}>
-      <Select options={listOptions} style={{ width: 120 }} {...props} />
+      <Select
+        {...props}
+        options={listOptions}
+        onSelect={(val) => {
+          if (props?.onSelect) {
+            props?.onSelect(val);
+          } else {
+            setValueInput(val);
+          }
+        }}
+        showSearch
+        filterOption={(input, option) =>
+          (option?.label ?? "").toLowerCase().includes(input?.toLowerCase())
+        }
+        style={{ width: 120 }}
+      />
     </FormItemSidos>
   );
 };

@@ -4,17 +4,14 @@ import { Button as ButtonMobile } from "antd-mobile";
 const BtnSidos = ({ children, propsDesktop, propsMobile, ...props }) => {
   const { xs } = Grid.useBreakpoint();
 
-  if (xs) {
-    return (
-      <ButtonMobile {...propsMobile} {...props}>
-        {children}
-      </ButtonMobile>
-    );
-  }
+  const propsBtn = xs ? propsMobile : propsDesktop;
+
+  const BtnWrapper = xs ? ButtonMobile : Button;
+
   return (
-    <Button {...propsDesktop} {...props}>
+    <BtnWrapper {...propsBtn} {...props}>
       {children}
-    </Button>
+    </BtnWrapper>
   );
 };
 
