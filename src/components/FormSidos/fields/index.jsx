@@ -6,11 +6,11 @@ import SwitchSidos from "./SwitchSidos";
 const Field = ({ type, ...props }) => {
   switch (type) {
     case "text":
-      return <InputSidos propsMobile={props} {...props} />;
+      return <InputSidos {...props} />;
     case "select":
-      return <SelectSidos propsMobile={props} {...props} />;
+      return <SelectSidos {...props} />;
     case "switch":
-      return <SwitchSidos propsMobile={props} {...props} />;
+      return <SwitchSidos {...props} />;
     default:
       return <NotFoundField>Not found field type</NotFoundField>;
   }

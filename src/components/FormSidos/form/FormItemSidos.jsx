@@ -1,15 +1,10 @@
-import { Form, Grid } from "antd";
-import { Form as FormMobile } from "antd-mobile";
+import { Form } from "antd";
 
-const FormItemSidos = ({ children, name, label, ...props }) => {
-  const { xs } = Grid.useBreakpoint();
-
-  const FormItem = xs ? FormMobile.Item : Form.Item;
-
+const FormItemSidos = ({ children, name, label, required, ...props }) => {
   return (
-    <FormItem name={name} label={label} {...props}>
+    <Form.Item name={name} label={label} required={required} {...props}>
       {children}
-    </FormItem>
+    </Form.Item>
   );
 };
 

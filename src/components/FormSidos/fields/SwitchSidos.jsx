@@ -1,26 +1,12 @@
-import { Grid, Switch as SwitchDesktop } from "antd";
-import { Switch as SwitchMobile } from "antd-mobile";
+import { Switch } from "antd";
 import { useEffect, useState } from "react";
 import { useFormContext } from "../../../context/FormContext";
 import FormItemSidos from "../form/FormItemSidos";
 
-const SwitchSidos = ({
-  name,
-  label,
-  checkText = "",
-  uncheckText = "",
-  propsDesktop,
-  propsMobile,
-  ...props
-}) => {
-  const { xs } = Grid.useBreakpoint();
+const SwitchSidos = ({ name, label, required, formItemObj, ...props }) => {
   const [valueSwitch, setValueSwitch] = useState(false);
 
   const { form } = useFormContext();
-
-  const Switch = xs ? SwitchMobile : SwitchDesktop;
-
-  const propsSwitch = xs ? propsMobile : propsDesktop;
 
   useEffect(() => {
     if (name) {
@@ -28,12 +14,13 @@ const SwitchSidos = ({
     }
   }, [valueSwitch]);
   return (
-    <FormItemSidos name={name} label={label}>
+    <FormItemSidos
+      {...formItemObj}
+      name={name}
+      label={label}
+      required={required}
+    >
       <Switch
-        {...(xs
-          ? { checkedText: checkText, uncheckedText: uncheckText }
-          : { checkedChildren: checkText, unCheckedChildren: uncheckText })}
-        {...propsSwitch}
         {...props}
         onChange={(val) => {
           if (props?.onChange) {

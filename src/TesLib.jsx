@@ -1,4 +1,5 @@
-import { Form } from "antd-mobile";
+import { Form, Input } from "antd";
+import BtnSidos from "./components/BtnSidos";
 import Field from "./components/FormSidos/fields";
 import FormSidos from "./components/FormSidos/form/FormSidos";
 import TableSidos from "./components/TableSidos";
@@ -24,7 +25,6 @@ function TesLib() {
           listOptions={dummyListOptions}
         />
       </FormSidos>
-      <TableSidos />
     </>
   );
 }

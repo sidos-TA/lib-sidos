@@ -1,13 +1,8 @@
-import { Form as FormDesktop, Grid } from "antd";
-import { Form as FormMobile } from "antd-mobile";
+import { Form, Grid } from "antd";
 import FormContext from "../../../context/FormContext";
 import BtnSidos from "../../BtnSidos";
 
 const FormSidos = ({ children, form, ...props }) => {
-  const { xs } = Grid.useBreakpoint();
-
-  const Form = xs ? FormMobile : FormDesktop;
-
   const submitHandler = () => {
     console.log(form.getFieldsValue(true));
   };
@@ -17,16 +12,9 @@ const FormSidos = ({ children, form, ...props }) => {
         form,
       }}
     >
-      <Form layout="vertical" autoComplete="off" {...props}>
+      <Form form={form} layout="vertical" autoComplete="off" {...props}>
         {children}
-
-        <BtnSidos
-          propsMobile={{ color: "primary" }}
-          propsDesktop={{ type: "primary" }}
-          htmlType="submit"
-          onClick={submitHandler}
-          {...(xs ? { type: "submit" } : { htmlType: "submit" })}
-        >
+        <BtnSidos htmlType="submit" onClick={submitHandler}>
           Submit
         </BtnSidos>
       </Form>
