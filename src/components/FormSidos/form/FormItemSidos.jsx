@@ -1,8 +1,23 @@
-import { Form } from "antd";
+import { Form, Typography } from "antd";
 
 const FormItemSidos = ({ children, name, label, required, ...props }) => {
   return (
-    <Form.Item name={name} label={label} required={required} {...props}>
+    <Form.Item
+      name={name}
+      label={
+        <Typography.Text style={{ fontSize: 18 }}>{label}</Typography.Text>
+      }
+      {...(required && {
+        rules: [
+          {
+            required: true,
+            message: `Mohon isi ${label}`,
+          },
+        ],
+      })}
+      // required={required}
+      {...props}
+    >
       {children}
     </Form.Item>
   );

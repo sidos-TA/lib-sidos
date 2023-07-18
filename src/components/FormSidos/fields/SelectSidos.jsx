@@ -1,26 +1,49 @@
-import { Grid, Select } from "antd";
-import { useEffect, useState } from "react";
-import { useFormContext } from "../../../context/FormContext";
+import { Select } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { responseSuccess } from "../../../helpers/formatRespons";
+import useFetch from "../../../helpers/useFetch";
 import FormItemSidos from "../form/FormItemSidos";
 
-const SelectSidos = ({ name, label, required, formItemObj, ...props }) => {
-  const { xs } = Grid.useBreakpoint();
-  const { form } = useFormContext();
+const SelectSidos = ({
+  name,
+  label,
+  required,
+  endpoint,
+  payload,
+  formItemObj,
+  selectLabel = "",
+  selectValue = "",
+  listOptions = [],
+  ...props
+}) => {
+  const fetch = useFetch();
+  const [state, setState] = useState({
+    listOptions: [],
+  });
 
-  const [valueInput, setValueInput] = useState("");
-  const [listOptions, setListOptions] = useState(props?.listOptions);
+  const fetchDatas = () => {
+    fetch({
+      endpoint,
+      ...(payload && {
+        payload,
+      }),
+    })?.then((res) => {
+      const arrDatas = responseSuccess(res);
+      setState({
+        ...state,
+        listOptions: arrDatas?.data?.map((data) => ({
+          label: selectLabel ? data?.[selectLabel] : data,
+          value: selectValue ? data?.[selectValue] : data,
+        })),
+      });
+    });
+  };
 
   useEffect(() => {
-    if (props?.listOptions && name) {
-      form?.setFieldValue(name, valueInput);
+    if (endpoint) {
+      fetchDatas();
     }
-  }, [JSON.stringify(valueInput)]);
-
-  useEffect(() => {
-    if (xs && props?.listOptions) {
-      setListOptions(props?.listOptions);
-    }
-  }, [JSON.stringify(props?.listOptions)]);
+  }, []);
 
   return (
     <FormItemSidos
@@ -29,22 +52,19 @@ const SelectSidos = ({ name, label, required, formItemObj, ...props }) => {
       required={required}
       {...formItemObj}
     >
-      <Select
-        {...props}
-        options={listOptions}
-        onSelect={(val) => {
-          if (props?.onSelect) {
-            props?.onSelect(val);
-          } else {
-            setValueInput(val);
-          }
-        }}
-        showSearch
-        filterOption={(input, option) =>
-          (option?.label ?? "").toLowerCase().includes(input?.toLowerCase())
-        }
-        style={{ width: 120 }}
-      />
+      {listOptions?.length ? (
+        <Select {...props} size="large" options={listOptions} />
+      ) : (
+        <Select {...props} size="large">
+          {state?.listOptions?.map((item, idx) => (
+            <Select.Option
+              key={`${item}${idx}`}
+              value={item?.value}
+              label={item?.label}
+            />
+          ))}
+        </Select>
+      )}
     </FormItemSidos>
   );
 };

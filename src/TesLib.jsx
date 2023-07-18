@@ -12,21 +12,7 @@ function TesLib() {
     value: index + 1,
   }));
 
-  return (
-    <>
-      <FormSidos form={form}>
-        <Field required type="text" name="nama" label="Nama" />
-        <Field type="text" name="kelas" label="Kelas" />
-        <Field
-          required
-          type="select"
-          name="select"
-          label="Select"
-          listOptions={dummyListOptions}
-        />
-      </FormSidos>
-    </>
-  );
+  return <></>;
 }
 
 export default TesLib;
