@@ -3,6 +3,7 @@ import { Form, Typography } from "antd";
 const FormItemSidos = ({ children, name, label, required, ...props }) => {
   return (
     <Form.Item
+      labelCol={{ span: 24 }}
       name={name}
       label={
         <Typography.Text style={{ fontSize: 18 }}>{label}</Typography.Text>

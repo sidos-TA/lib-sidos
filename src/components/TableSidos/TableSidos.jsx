@@ -1,9 +1,16 @@
-import { Col, Row, Skeleton, Space, Table } from "antd";
+import { Col, message, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
-import { responseSuccess } from "../../helpers/formatRespons";
+import { useNavigate } from "react-router-dom";
+import deleteCookie from "../../helpers/deleteCookie";
+import {
+  forbiddenResponse,
+  responseError,
+  responseSuccess,
+  unAuthResponse,
+} from "../../helpers/formatRespons";
 import useFetch from "../../helpers/useFetch";
 import TableStyled from "../../styled/TableStyled";
-import TableLoading from "./TableLoading";
+import LoadingSidos from "../LoadingSidos";
 
 const TableSidos = ({
   endpoint,
@@ -19,6 +26,8 @@ const TableSidos = ({
     arrDatas: [],
     loading: false,
   });
+  const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
 
   const loadingFetchHandler = (loading) =>
     setState((prev) => ({
@@ -35,12 +44,17 @@ const TableSidos = ({
       ?.then((res) => {
         const responses = responseSuccess(res);
 
-        if (responses?.data?.length) {
+        if ("data" in responses) {
           setState((prev) => ({
             ...prev,
             arrDatas: responses?.data?.map((data, key) => ({ ...data, key })),
           }));
         }
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+        unAuthResponse({ err, messageApi });
+        forbiddenResponse({ err, navigate });
       })
       ?.finally(() => {
         loadingFetchHandler(false);
@@ -57,43 +71,37 @@ const TableSidos = ({
     if (arrDatas?.length) {
       setState((prev) => ({
         ...prev,
-        arrDatas: arrDatas?.map((data, idx) => ({ ...data, key: data?.nip })),
+        arrDatas: arrDatas?.map((data) => ({ ...data, key: data?.nip })),
       }));
     }
   }, [JSON.stringify(arrDatas)]);
 
-  useEffect(() => {
-    setState((prev) => ({
-      ...prev,
-      loading: isLoading,
-    }));
-  }, [isLoading]);
-
   return (
-    <TableStyled>
-      {state?.loading ? (
-        <TableLoading />
-      ) : (
-        <Space direction="vertical" size="large">
-          {customFilter?.length ? (
-            <Row gutter={8} wrap>
-              {customFilter?.map((eleFilter, idx) => {
-                return (
-                  <Col span={24 / customFilter?.length} key={idx}>
-                    {eleFilter}
-                  </Col>
-                );
-              })}
-            </Row>
-          ) : (
-            <Fragment />
-          )}
-          <Table {...props} bordered dataSource={state?.arrDatas}>
-            {children}
-          </Table>
-        </Space>
-      )}
-    </TableStyled>
+    <>
+      {contextHolder}
+      <LoadingSidos spinning={state?.loading || isLoading}>
+        <TableStyled>
+          <Space direction="vertical" size="large">
+            {customFilter?.length ? (
+              <Row gutter={8} wrap>
+                {customFilter?.map((eleFilter, idx) => {
+                  return (
+                    <Col span={24 / customFilter?.length} key={idx}>
+                      {eleFilter}
+                    </Col>
+                  );
+                })}
+              </Row>
+            ) : (
+              <Fragment />
+            )}
+            <Table {...props} bordered dataSource={state?.arrDatas}>
+              {children}
+            </Table>
+          </Space>
+        </TableStyled>
+      </LoadingSidos>
+    </>
   );
 };
 

@@ -1,10 +1,15 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { responseSuccess } from "../helpers/formatRespons";
+import { useEffect, useRef, useState } from "react";
+import { responseError, responseSuccess } from "../helpers/formatRespons";
 import useFetch from "../helpers/useFetch";
 import ReactFrappeChart from "react-frappe-charts";
+import LoadingSidos from "./LoadingSidos";
+import { Dropdown, Empty, Space } from "antd";
+import { EllipsisOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
-const PieChartSidos = ({ endpoint, payload, customLabel }) => {
+const PieChartSidos = ({ endpoint, payload }) => {
   const fetch = useFetch();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     objDatas: {
       labels: [],
@@ -43,6 +48,13 @@ const PieChartSidos = ({ endpoint, payload, customLabel }) => {
           }));
         }
       })
+      ?.catch((e) => {
+        const err = responseError(e);
+
+        if (err?.status == 403) {
+          navigate("/unauth");
+        }
+      })
       ?.finally(() => {
         setState((prev) => ({
           ...prev,
@@ -63,27 +75,49 @@ const PieChartSidos = ({ endpoint, payload, customLabel }) => {
     }
   }, [endpoint]);
 
-  return (
-    <Fragment>
-      {state?.loading ? (
-        <>Loading...</>
-      ) : (
-        <div>
-          <button onClick={exportChart} type="button">
-            Export
-          </button>
+  if (state?.loading) {
+    return <LoadingSidos />;
+  }
+  if (state?.objDatas?.datasets?.[0]?.values?.every((data) => data === 0)) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  } else {
+    return (
+      <div style={{ textAlign: "right" }}>
+        <Dropdown
+          placement="bottomRight"
+          menu={{
+            items: [
+              {
+                label: "Download",
+                key: "download",
+                onClick: () => exportChart(),
+              },
+            ],
+          }}
+          trigger={["click"]}
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            <Space>
+              <EllipsisOutlined
+                style={{
+                  rotate: "90deg",
+                  fontSize: 28,
+                }}
+              />
+            </Space>
+          </a>
+        </Dropdown>
 
-          <ReactFrappeChart
-            ref={chartRef}
-            type="pie"
-            height={500}
-            axisOptions={{ xAxisMode: "tick", yAxisMode: "tick", xIsSeries: 1 }}
-            data={state?.objDatas}
-          />
-        </div>
-      )}
-    </Fragment>
-  );
+        <ReactFrappeChart
+          ref={chartRef}
+          type="pie"
+          height={500}
+          axisOptions={{ xAxisMode: "tick", yAxisMode: "tick", xIsSeries: 1 }}
+          data={state?.objDatas}
+        />
+      </div>
+    );
+  }
 };
 
 export default PieChartSidos;

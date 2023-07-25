@@ -1,10 +1,11 @@
-import { Select } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { Select as SelectAntd } from "antd";
+import { memo, useEffect, useRef, useState } from "react";
 import { responseSuccess } from "../../../helpers/formatRespons";
 import useFetch from "../../../helpers/useFetch";
+import SelectStyled from "../../../styled/SelectStyled";
 import FormItemSidos from "../form/FormItemSidos";
 
-const SelectSidos = ({
+const Select = ({
   name,
   label,
   required,
@@ -43,30 +44,38 @@ const SelectSidos = ({
     if (endpoint) {
       fetchDatas();
     }
-  }, []);
+  }, [endpoint, JSON.stringify(payload)]);
 
   return (
-    <FormItemSidos
-      name={name}
-      label={label}
-      required={required}
-      {...formItemObj}
-    >
-      {listOptions?.length ? (
-        <Select {...props} size="large" options={listOptions} />
-      ) : (
-        <Select {...props} size="large">
-          {state?.listOptions?.map((item, idx) => (
-            <Select.Option
-              key={`${item}${idx}`}
-              value={item?.value}
-              label={item?.label}
-            />
-          ))}
-        </Select>
-      )}
-    </FormItemSidos>
+    <SelectStyled>
+      <FormItemSidos
+        name={name}
+        label={label}
+        required={required}
+        {...formItemObj}
+      >
+        {listOptions?.length ? (
+          <SelectAntd
+            {...props}
+            size="large"
+            options={listOptions}
+            showSearch
+          />
+        ) : (
+          <SelectAntd {...props} size="large" showSearch>
+            {state?.listOptions?.map((item, idx) => (
+              <SelectAntd.Option
+                key={`${item}${idx}`}
+                value={item?.value}
+                label={item?.label}
+              />
+            ))}
+          </SelectAntd>
+        )}
+      </FormItemSidos>
+    </SelectStyled>
   );
 };
 
+const SelectSidos = memo(Select);
 export default SelectSidos;

@@ -1,9 +1,10 @@
-import { Switch } from "antd";
+import { Switch as SwitchAntd } from "antd";
+import { memo } from "react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "../../../context/FormContext";
 import FormItemSidos from "../form/FormItemSidos";
 
-const SwitchSidos = ({ name, label, required, formItemObj, ...props }) => {
+const Switch = ({ name, label, required, formItemObj, ...props }) => {
   const [valueSwitch, setValueSwitch] = useState(false);
 
   const { form } = useFormContext();
@@ -20,7 +21,7 @@ const SwitchSidos = ({ name, label, required, formItemObj, ...props }) => {
       label={label}
       required={required}
     >
-      <Switch
+      <SwitchAntd
         {...props}
         onChange={(val) => {
           if (props?.onChange) {
@@ -34,4 +35,5 @@ const SwitchSidos = ({ name, label, required, formItemObj, ...props }) => {
   );
 };
 
+const SwitchSidos = memo(Switch);
 export default SwitchSidos;

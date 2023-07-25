@@ -1,7 +1,16 @@
-import { Input } from "antd";
+import { Input as InputAntd } from "antd";
+import { memo } from "react";
 import FormItemSidos from "../form/FormItemSidos";
 
-const InputSidos = ({ required, name, label, formItemObj, ...props }) => {
+const Input = ({
+  required,
+  type,
+  name,
+  label,
+  formItemObj,
+  onChange,
+  ...props
+}) => {
   return (
     <FormItemSidos
       name={name}
@@ -9,9 +18,30 @@ const InputSidos = ({ required, name, label, formItemObj, ...props }) => {
       required={required}
       {...formItemObj}
     >
-      <Input size="large" {...props} />
+      {type === "password" ? (
+        <InputAntd.Password
+          size="large"
+          {...props}
+          onChange={({ target: { value } }) => {
+            if (onChange) {
+              onChange(value);
+            }
+          }}
+        />
+      ) : (
+        <InputAntd
+          size="large"
+          {...props}
+          onChange={({ target: { value } }) => {
+            if (onChange) {
+              onChange(value);
+            }
+          }}
+        />
+      )}
     </FormItemSidos>
   );
 };
 
+const InputSidos = memo(Input);
 export default InputSidos;
