@@ -112,7 +112,7 @@ const TableSidos = ({
           {state?.loading || isLoading ? (
             <LoadingSidos style={{ height: "50vh", width: "100vh" }} />
           ) : (
-            <Table {...props} bordered dataSource={state?.arrDatas}>
+            <Table bordered {...props} dataSource={state?.arrDatas}>
               {children}
             </Table>
           )}

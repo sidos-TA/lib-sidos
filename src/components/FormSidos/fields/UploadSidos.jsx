@@ -14,6 +14,7 @@ const UploadSidos = ({
   formItemObj = {},
   isManualSize = false,
   required = false,
+  rules = [],
   ...props
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -58,6 +59,7 @@ const UploadSidos = ({
         label={label}
         name={name}
         required={required}
+        rules={rules}
         {...formItemObj}
       >
         <Upload

@@ -12,6 +12,7 @@ const LabelSidos = ({
   onChange,
   defaultValue,
   labelProps,
+  rules,
   ...props
 }) => {
   const [editMode, setEditMode] = useState(false);
@@ -22,6 +23,7 @@ const LabelSidos = ({
         <Field
           autoFocus
           label={label}
+          rules={rules}
           type={type}
           onChange={(value) => {
             onChange(value);

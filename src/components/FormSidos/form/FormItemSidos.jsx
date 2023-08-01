@@ -1,6 +1,13 @@
 import { Form, Typography } from "antd";
 
-const FormItemSidos = ({ children, name, label, required, ...props }) => {
+const FormItemSidos = ({
+  children,
+  name,
+  label,
+  required,
+  rules = [],
+  ...props
+}) => {
   return (
     <Form.Item
       labelCol={{ span: 24 }}
@@ -8,15 +15,17 @@ const FormItemSidos = ({ children, name, label, required, ...props }) => {
       label={
         <Typography.Text style={{ fontSize: 18 }}>{label}</Typography.Text>
       }
-      {...(required && {
-        rules: [
-          {
-            required: true,
-            message: `Mohon isi ${label}`,
-          },
-        ],
-      })}
-      // required={required}
+      {...(required
+        ? {
+            rules: [
+              {
+                required: true,
+                message: `Mohon isi ${label}`,
+              },
+              ...rules,
+            ],
+          }
+        : { rules })}
       {...props}
     >
       {children}

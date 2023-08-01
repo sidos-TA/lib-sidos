@@ -24,7 +24,6 @@ const FormSidos = ({
   payloadDelete,
   showSubmitBtn = false,
   BtnSubmitProps = {},
-  onSuccessAction,
   beforeSubmit,
   debugSubmit = false,
   afterMessageActionClose,
@@ -133,18 +132,15 @@ const FormSidos = ({
               type: "success",
               key: "submit_form",
               content: response?.data || response?.message,
-              duration: 0.3,
+              duration: 0.8,
               onClose: () => {
-                if (onSuccessAction) {
-                  onSuccessAction();
+                if (afterMessageActionClose) {
+                  afterMessageActionClose(response);
                 } else {
                   navigate(-1);
                 }
               },
             });
-            if (afterMessageActionClose) {
-              afterMessageActionClose(response);
-            }
           }
         })
         ?.catch((e) => {

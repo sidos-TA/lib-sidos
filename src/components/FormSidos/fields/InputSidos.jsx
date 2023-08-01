@@ -9,6 +9,7 @@ const Input = ({
   formItemObj,
   onChange,
   isPassword = false,
+  rules = [],
   ...props
 }) => {
   return (
@@ -16,6 +17,7 @@ const Input = ({
       name={name}
       label={label}
       required={required}
+      rules={rules}
       {...formItemObj}
     >
       {isPassword ? (

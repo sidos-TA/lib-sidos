@@ -20,6 +20,7 @@ const Select = ({
   selectLabel = "",
   selectValue = "",
   listOptions = [],
+  rules = [],
   ...props
 }) => {
   const fetch = useFetch();
@@ -74,6 +75,7 @@ const Select = ({
           name={name}
           label={label}
           required={required}
+          rules={rules}
           {...formItemObj}
         >
           {listOptions?.length ? (

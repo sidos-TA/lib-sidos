@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "../../../context/FormContext";
 import FormItemSidos from "../form/FormItemSidos";
 
-const Switch = ({ name, label, required, formItemObj, ...props }) => {
+const Switch = ({
+  name,
+  label,
+  required,
+  formItemObj,
+  rules = [],
+  ...props
+}) => {
   const [valueSwitch, setValueSwitch] = useState(false);
 
   const { form } = useFormContext();
@@ -20,6 +27,7 @@ const Switch = ({ name, label, required, formItemObj, ...props }) => {
       name={name}
       label={label}
       required={required}
+      rules={rules}
     >
       <SwitchAntd
         {...props}

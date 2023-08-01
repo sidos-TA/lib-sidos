@@ -17,5 +17,9 @@ const TableStyled = styled.div`
     background-color: #e6f4ff !important;
     color: #1677ff;
   }
+  .disabled-row {
+    background-color: #dcdcdc;
+    pointer-events: none;
+  }
 `;
 export default TableStyled;

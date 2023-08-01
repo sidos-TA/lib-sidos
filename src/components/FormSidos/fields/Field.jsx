@@ -6,32 +6,27 @@ import SelectSidos from "./SelectSidos";
 import SwitchSidos from "./SwitchSidos";
 import UploadSidos from "./UploadSidos";
 
-const Field = ({ type, name, label, required, ...props }) => {
+const Field = ({ type, name, label, rules, required, ...props }) => {
+  const fieldProps = {
+    type,
+    name,
+    label,
+    rules,
+    required,
+  };
   switch (type) {
     case "text":
-      return (
-        <InputSidos name={name} label={label} required={required} {...props} />
-      );
+      return <InputSidos {...fieldProps} {...props} />;
     case "number":
-      return (
-        <NumberSidos name={name} label={label} required={required} {...props} />
-      );
+      return <NumberSidos {...fieldProps} {...props} />;
     case "select":
-      return (
-        <SelectSidos name={name} label={label} required={required} {...props} />
-      );
+      return <SelectSidos {...fieldProps} {...props} />;
     case "radio":
-      return (
-        <RadioSidos name={name} label={label} required={required} {...props} />
-      );
+      return <RadioSidos {...fieldProps} {...props} />;
     case "switch":
-      return (
-        <SwitchSidos name={name} label={label} required={required} {...props} />
-      );
+      return <SwitchSidos {...fieldProps} {...props} />;
     case "upload":
-      return (
-        <UploadSidos name={name} label={label} required={required} {...props} />
-      );
+      return <UploadSidos {...fieldProps} {...props} />;
     default:
       return <Alert message="Tipe field tidak tersedia" type="warning" />;
   }

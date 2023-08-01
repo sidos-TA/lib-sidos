@@ -11,6 +11,7 @@ const RadioSidosComponent = ({
   propsMobile,
   listOptions,
   onChange,
+  rules = [],
   ...props
 }) => {
   const { xs } = Grid.useBreakpoint();
@@ -18,7 +19,13 @@ const RadioSidosComponent = ({
   const propsRadio = xs ? propsMobile : propsDesktop;
 
   return (
-    <FormItemSidos name={name} label={label} required={required} {...props}>
+    <FormItemSidos
+      name={name}
+      rules={rules}
+      label={label}
+      required={required}
+      {...props}
+    >
       <Radio.Group
         size="large"
         options={listOptions}

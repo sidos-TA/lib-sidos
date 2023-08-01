@@ -2,12 +2,21 @@ import { InputNumber } from "antd";
 import { memo } from "react";
 import FormItemSidos from "../form/FormItemSidos";
 
-const Number = ({ name, label, required, formItemObj, onChange, ...props }) => {
+const Number = ({
+  name,
+  label,
+  required,
+  rules = [],
+  formItemObj,
+  onChange,
+  ...props
+}) => {
   return (
     <FormItemSidos
       name={name}
       label={label}
       required={required}
+      rules={rules}
       {...formItemObj}
     >
       <InputNumber
