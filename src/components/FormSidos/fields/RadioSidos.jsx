@@ -13,7 +13,6 @@ const RadioSidosComponent = ({
   onChange,
   ...props
 }) => {
-  const { form } = useFormContext();
   const { xs } = Grid.useBreakpoint();
 
   const propsRadio = xs ? propsMobile : propsDesktop;

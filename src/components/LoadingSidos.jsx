@@ -18,6 +18,7 @@ const LoadingSidos = ({ children, style, ...props }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        height:"80vh",
         ...style,
       }}
     >

@@ -8,6 +8,7 @@ const AvatarSidos = ({
   colorBadge = "#52c41a",
   mainInfo,
   subInfo,
+  src,
 }) => {
   return (
     <Space direction="vertical" size="small" style={{ textAlign: "center" }}>
@@ -15,8 +16,9 @@ const AvatarSidos = ({
         <ImageSidos
           style={{ borderRadius: 500 }}
           width={280}
-          preview={false}
-          src={fallbackImage}
+          // preview={false}
+          src={src}
+          // src={fallbackImage}
         />
       </BadgeSidos>
       <Typography.Title level={5}>{mainInfo}</Typography.Title>

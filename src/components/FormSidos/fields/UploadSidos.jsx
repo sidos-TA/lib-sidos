@@ -1,41 +1,23 @@
-import { message, Modal, Upload } from "antd";
-import { useState } from "react";
+import { message, Upload } from "antd";
+import { useEffect } from "react";
+import { useFormContext } from "../../../context/FormContext";
 import getBase64 from "../../../helpers/getBase64";
+import FormItemSidos from "../form/FormItemSidos";
 
 const UploadSidos = ({
   beforeUpload,
   handleChange,
   children,
   isImage,
+  label,
+  name,
+  formItemObj = {},
+  isManualSize = false,
+  required = false,
   ...props
 }) => {
-  const [state, setState] = useState({
-    previewVisible: false,
-    previewImg: "",
-    previewTitle: "",
-  });
-
   const [messageApi, contextHolder] = message.useMessage();
-
-  const handleCancel = () =>
-    setState((prev) => ({ ...prev, previewVisible: false }));
-
-  // const handlePreview = async (file) => {
-  //   if (!file?.url && !file?.preview) {
-  //     file.preview = await getBase64(file?.originFileObj);
-  //   }
-
-  //   setState((prev) => ({
-  //     ...prev,
-  //     previewImg: file.url || file.preview,
-  //     previewVisible: true,
-  //     previewTitle:
-  //       file.name || file.url.substring(file.url.lastIndexOf("/") + 1),
-  //   }));
-  // };
-  const handleChangeHandler = async ({ file }) => {
-    const base64 = await getBase64(file?.originFileObj);
-  };
+  const { form } = useFormContext();
 
   const beforeUploadHandler = (file) => {
     if (isImage) {
@@ -50,41 +32,62 @@ const UploadSidos = ({
           content: `${file?.name} is not a png/jpeg/jpg file`,
         });
       }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        message.error("File must smaller than 2MB!");
+      if (!isManualSize) {
+        const isLt2M = file.size / 1024 / 1024 < 1;
+
+        if (!isLt2M) {
+          messageApi.open({
+            type: "error",
+            content: "Ukuran file jangan lebih dari 1MB",
+          });
+        }
+
+        return (isImgFormat || Upload.LIST_IGNORE) && isLt2M;
       }
-      return (isImgFormat || Upload.LIST_IGNORE) && isLt2M;
+      return isImgFormat || Upload.LIST_IGNORE;
     }
   };
 
+  // useEffect(() => {
+  //   console.log("sdsdsd");
+  // }, [JSON.stringify(form?.getFieldsValue())]);
   return (
     <>
       {contextHolder}
-
-      <Upload
-        {...props}
-        // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        maxCount={1}
-        // customRequest={() => console.log("mana")}
-        // onPreview={handlePreview}
-        onChange={(file) => {
-          if (handleChange) {
-            handleChange(file);
-          } else {
-            handleChangeHandler(file);
-          }
-        }}
-        beforeUpload={(file) => {
-          if (beforeUpload) {
-            beforeUpload(file);
-          } else {
-            beforeUploadHandler(file);
-          }
-        }}
+      <FormItemSidos
+        label={label}
+        name={name}
+        required={required}
+        {...formItemObj}
       >
-        {children}
-      </Upload>
+        <Upload
+          {...(isImage && {
+            accept: ".jpg,.png,.jpeg",
+          })}
+          maxCount={1}
+          onChange={async (file) => {
+            if (handleChange) {
+              handleChange(file);
+            }
+            const getValueField = form?.getFieldValue(name);
+
+            const base64Url = await getBase64(getValueField?.file);
+            form?.setFieldValue(name, base64Url);
+          }}
+          beforeUpload={(file) => {
+            if (beforeUpload) {
+              beforeUpload(file);
+            } else {
+              beforeUploadHandler(file);
+            }
+
+            return false;
+          }}
+          {...props}
+        >
+          {children}
+        </Upload>
+      </FormItemSidos>
     </>
   );
 };

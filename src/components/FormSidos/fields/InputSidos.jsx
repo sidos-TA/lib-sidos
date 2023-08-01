@@ -4,11 +4,11 @@ import FormItemSidos from "../form/FormItemSidos";
 
 const Input = ({
   required,
-  type,
   name,
   label,
   formItemObj,
   onChange,
+  isPassword = false,
   ...props
 }) => {
   return (
@@ -18,7 +18,7 @@ const Input = ({
       required={required}
       {...formItemObj}
     >
-      {type === "password" ? (
+      {isPassword ? (
         <InputAntd.Password
           size="large"
           {...props}

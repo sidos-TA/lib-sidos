@@ -19,6 +19,7 @@ const TableSidos = ({
   customFilter = [],
   arrDatas = [],
   isLoading = false,
+  customFetch,
   ...props
 }) => {
   const fetch = useFetch();
@@ -45,16 +46,29 @@ const TableSidos = ({
         const responses = responseSuccess(res);
 
         if ("data" in responses) {
-          setState((prev) => ({
-            ...prev,
-            arrDatas: responses?.data?.map((data, key) => ({ ...data, key })),
-          }));
+          if (customFetch) {
+            customFetch(responses);
+          } else {
+            setState((prev) => ({
+              ...prev,
+              arrDatas: responses?.data?.map((data, key) => ({ ...data, key })),
+            }));
+          }
         }
       })
       ?.catch((e) => {
         const err = responseError(e);
-        unAuthResponse({ err, messageApi });
-        forbiddenResponse({ err, navigate });
+        if (err?.status === 401) {
+          unAuthResponse({ err, messageApi });
+        } else if (err?.status === 403) {
+          forbiddenResponse({ err, navigate });
+        } else {
+          messageApi.open({
+            type: "error",
+            key: "errMsg",
+            content: err?.error,
+          });
+        }
       })
       ?.finally(() => {
         loadingFetchHandler(false);
@@ -79,28 +93,31 @@ const TableSidos = ({
   return (
     <>
       {contextHolder}
-      <LoadingSidos spinning={state?.loading || isLoading}>
-        <TableStyled>
-          <Space direction="vertical" size="large">
-            {customFilter?.length ? (
-              <Row gutter={8} wrap>
-                {customFilter?.map((eleFilter, idx) => {
-                  return (
-                    <Col span={24 / customFilter?.length} key={idx}>
-                      {eleFilter}
-                    </Col>
-                  );
-                })}
-              </Row>
-            ) : (
-              <Fragment />
-            )}
+      <TableStyled>
+        <Space direction="vertical" size="large">
+          {customFilter?.length ? (
+            <Row gutter={8} wrap>
+              {customFilter?.map((eleFilter, idx) => {
+                return (
+                  <Col span={24 / customFilter?.length} key={idx}>
+                    {eleFilter}
+                  </Col>
+                );
+              })}
+            </Row>
+          ) : (
+            <Fragment />
+          )}
+
+          {state?.loading || isLoading ? (
+            <LoadingSidos style={{ height: "50vh", width: "100vh" }} />
+          ) : (
             <Table {...props} bordered dataSource={state?.arrDatas}>
               {children}
             </Table>
-          </Space>
-        </TableStyled>
-      </LoadingSidos>
+          )}
+        </Space>
+      </TableStyled>
     </>
   );
 };

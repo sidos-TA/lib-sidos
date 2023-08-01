@@ -1,30 +1,78 @@
-import { Space, Typography } from "antd";
+import { Space, Tooltip, Typography } from "antd";
+import { createRef, Fragment, useRef } from "react";
+import { useState } from "react";
+import Field from "./Field";
+import { EditOutlined } from "@ant-design/icons";
 
-const LabelSidos = ({ isEditable, label, children, onChange, ...props }) => {
+const LabelSidos = ({
+  isEditable,
+  type,
+  label,
+  children,
+  onChange,
+  defaultValue,
+  labelProps,
+  ...props
+}) => {
+  const [editMode, setEditMode] = useState(false);
+
   return (
     <Space direction="vertical" style={{ marginBottom: 20 }}>
-      <label>
-        <span
-          className="ant-typography css-dev-only-do-not-override-1wjdbgv"
-          style={{ fontSize: 18 }}
-        >
-          {label}
-        </span>
-      </label>
-      <Typography.Text
-        {...(isEditable && {
-          editable: {
-            tooltip: `Click to edit ${label}`,
-            triggerType: ["icon", "text"],
-            onChange: (val) => {
-              onChange(val);
+      {editMode ? (
+        <Field
+          autoFocus
+          label={label}
+          type={type}
+          onChange={(value) => {
+            onChange(value);
+          }}
+          defaultValue={defaultValue}
+          {...(type === "select" && {
+            onInputKeyDown: (e) => {
+              if (e?.code === "Enter") {
+                setEditMode(false);
+              }
             },
-          },
-        })}
-        {...props}
-      >
-        {children}
-      </Typography.Text>
+            defaultOpen: true,
+          })}
+          onKeyPress={(e) => {
+            if (e?.code === "Enter") {
+              setEditMode(false);
+            }
+          }}
+          {...props}
+        />
+      ) : (
+        <Fragment>
+          <label>
+            <span
+              className="ant-typography css-dev-only-do-not-override-1wjdbgv"
+              style={{ fontSize: 18 }}
+            >
+              {label}
+            </span>
+          </label>
+          <Space>
+            <Typography.Text
+              {...(isEditable && {
+                onClick: () => {
+                  setEditMode(true);
+                },
+              })}
+              {...labelProps}
+            >
+              {children}
+            </Typography.Text>
+            {isEditable && (
+              <EditOutlined
+                onClick={() => {
+                  setEditMode(true);
+                }}
+              />
+            )}
+          </Space>
+        </Fragment>
+      )}
     </Space>
   );
 };

@@ -2,7 +2,7 @@ import { InputNumber } from "antd";
 import { memo } from "react";
 import FormItemSidos from "../form/FormItemSidos";
 
-const Number = ({ name, label, required, formItemObj, ...props }) => {
+const Number = ({ name, label, required, formItemObj, onChange, ...props }) => {
   return (
     <FormItemSidos
       name={name}
@@ -10,7 +10,14 @@ const Number = ({ name, label, required, formItemObj, ...props }) => {
       required={required}
       {...formItemObj}
     >
-      <InputNumber {...props} />
+      <InputNumber
+        onChange={(value) => {
+          if (onChange) {
+            onChange(value);
+          }
+        }}
+        {...props}
+      />
     </FormItemSidos>
   );
 };

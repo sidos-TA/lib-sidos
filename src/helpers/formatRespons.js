@@ -21,21 +21,22 @@ const responseError = (res) => {
   }
 };
 
-const unAuthResponse = ({ messageApi, err }) => {
-  if (err?.status === 401) {
-    messageApi?.open({
-      key: "err_api",
-      type: "error",
-      content: "Login ulang",
-      ...(err?.status === 401 && {
-        onClose: () => {
-          deleteCookie("token");
+const unAuthResponse = ({ messageApi, err, isBackToLogin = true }) => {
+  const { pathname } = window.location;
+  messageApi?.open({
+    key: "err_api",
+    type: "error",
+    content: err?.error,
+    ...(err?.status === 401 && {
+      onClose: () => {
+        deleteCookie("token");
+        if (isBackToLogin && pathname !== "/login") {
           window.location.href = "/login";
-        },
-      }),
-      duration: 0.8,
-    });
-  }
+        }
+      },
+    }),
+    duration: 0.8,
+  });
 };
 
 const forbiddenResponse = ({ navigate, err }) => {

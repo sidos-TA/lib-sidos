@@ -1,10 +1,10 @@
-import { Form, message } from "antd";
+import { Form, message, Modal, Space } from "antd";
 import { Fragment } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormContext from "../../../context/FormContext";
-import deleteCookie from "../../../helpers/deleteCookie";
 import {
+  forbiddenResponse,
   responseError,
   responseSuccess,
   unAuthResponse,
@@ -17,16 +17,20 @@ const FormSidos = ({
   children,
   form,
   submitEndpoint,
+  deleteEndpoint,
   customFetch,
   endpoint,
   payload,
+  payloadDelete,
   showSubmitBtn = false,
   BtnSubmitProps = {},
-  onSubmitSuccess,
+  onSuccessAction,
   beforeSubmit,
   debugSubmit = false,
-  afterSubmitHandler,
+  afterMessageActionClose,
+  afterFetchSuccesHandler,
   submitText = "Submit",
+  deleteText = "Delete",
   ...props
 }) => {
   const fetch = useFetch();
@@ -35,8 +39,10 @@ const FormSidos = ({
     isLoadingForm: false,
     isDisabled: false,
     isLoadingSubmitForm: false,
+    isRefetch: false,
   });
   const [messageApi, contextHolder] = message.useMessage();
+  const [modal, contextHolderModal] = Modal.useModal();
 
   const fetchDatas = () => {
     setState((prev) => ({
@@ -52,6 +58,9 @@ const FormSidos = ({
         const response = responseSuccess(res);
 
         if (response?.status === 200) {
+          if (afterFetchSuccesHandler) {
+            afterFetchSuccesHandler(response?.data);
+          }
           if (customFetch) {
             customFetch(response?.data);
           } else {
@@ -61,12 +70,27 @@ const FormSidos = ({
       })
       ?.catch((e) => {
         const err = responseError(e);
-        unAuthResponse({ err, messageApi });
-        messageApi.open({
-          type: "error",
-          key: "send",
-          content: err?.error,
-        });
+        if (err?.status === 401) {
+          unAuthResponse({ err, messageApi });
+        } else if (err?.status === 403) {
+          forbiddenResponse({ navigate, err });
+        } else if (err?.status === 404) {
+          messageApi.open({
+            type: "error",
+            key: "send",
+            content: err?.error,
+            onClose: () => {
+              navigate(-1);
+            },
+            duration: 0.5,
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            key: "send",
+            content: err?.error,
+          });
+        }
       })
       ?.finally(() => {
         setState((prev) => ({
@@ -76,7 +100,7 @@ const FormSidos = ({
       });
   };
 
-  const submitHandler = () => {
+  const actionHandler = (endpointAction) => {
     let formDatas = form.getFieldsValue(true);
 
     if (beforeSubmit) {
@@ -93,47 +117,69 @@ const FormSidos = ({
         isLoadingSubmitForm: true,
       }));
       fetch({
-        endpoint: submitEndpoint,
+        endpoint: endpointAction,
         payload: {
           ...payload,
+          ...(deleteEndpoint && {
+            ...payloadDelete,
+          }),
           ...formDatas,
         },
       })
         ?.then((res) => {
           const response = responseSuccess(res);
           if (response?.status === 200) {
-            if (afterSubmitHandler) {
-              afterSubmitHandler(response);
-            }
             messageApi.open({
               type: "success",
               key: "submit_form",
               content: response?.data || response?.message,
+              duration: 0.3,
               onClose: () => {
-                if (onSubmitSuccess) {
-                  onSubmitSuccess();
+                if (onSuccessAction) {
+                  onSuccessAction();
                 } else {
                   navigate(-1);
                 }
               },
             });
+            if (afterMessageActionClose) {
+              afterMessageActionClose(response);
+            }
           }
         })
         ?.catch((e) => {
           const err = responseError(e);
-          messageApi.open({
-            type: "error",
-            key: "error_submit_form",
-            content:
-              typeof err?.error === "object" ? "Terjadi kesalahan" : err?.error,
-            onClose: () => {
-              setState((prev) => ({
-                ...prev,
-                isLoadingSubmitForm: false,
-              }));
-            },
-          });
+
+          if (err?.status === 401) {
+            unAuthResponse({ err, messageApi });
+            setState((prev) => ({
+              ...prev,
+              isLoadingSubmitForm: false,
+            }));
+          } else {
+            messageApi.open({
+              type: "error",
+              key: "error_submit_form",
+              content:
+                typeof err?.error === "object"
+                  ? "Terjadi kesalahan"
+                  : err?.error,
+              onClose: () => {
+                setState((prev) => ({
+                  ...prev,
+                  isLoadingSubmitForm: false,
+                }));
+              },
+              duration: 1,
+            });
+          }
         });
+      // ?.finally(() => {
+      //   setState((prev) => ({
+      //     ...prev,
+      //     isLoadingSubmitForm: false,
+      //   }));
+      // });
     }
   };
 
@@ -146,6 +192,7 @@ const FormSidos = ({
   return (
     <>
       {contextHolder}
+      {contextHolderModal}
       <FormContext.Provider
         value={{
           form,
@@ -160,27 +207,48 @@ const FormSidos = ({
               layout="vertical"
               autoComplete="off"
               scrollToFirstError
-              // wrapperCol={{
-              //   span: 12,
-              // }}
               {...props}
             >
               {children}
-              {(submitEndpoint || showSubmitBtn) && (
-                <BtnSidos
-                  {...BtnSubmitProps}
-                  position="center"
-                  htmlType="submit"
-                  type="primary"
-                  onClick={() => {
-                    form?.validateFields()?.then(() => {
-                      submitHandler();
-                    });
-                  }}
-                >
-                  {submitText}
-                </BtnSidos>
-              )}
+              <Space style={{ justifyContent: "center", width: "100%" }}>
+                {deleteEndpoint && (
+                  <BtnSidos
+                    {...BtnSubmitProps}
+                    danger
+                    position="center"
+                    htmlType="submit"
+                    type="dashed"
+                    onClick={() => {
+                      modal.confirm({
+                        content: "Apakah anda yakin untuk menghapusnya ?",
+                        onOk: () => {
+                          actionHandler(deleteEndpoint);
+                        },
+                      });
+                      // form?.validateFields()?.then(() => {
+                      //   submitHandler();
+                      // });
+                    }}
+                  >
+                    {deleteText}
+                  </BtnSidos>
+                )}
+                {(submitEndpoint || showSubmitBtn) && (
+                  <BtnSidos
+                    {...BtnSubmitProps}
+                    position="center"
+                    htmlType="submit"
+                    type="primary"
+                    onClick={() => {
+                      form?.validateFields()?.then(() => {
+                        actionHandler(submitEndpoint);
+                      });
+                    }}
+                  >
+                    {submitText}
+                  </BtnSidos>
+                )}
+              </Space>
             </Form>
           </Fragment>
         )}
