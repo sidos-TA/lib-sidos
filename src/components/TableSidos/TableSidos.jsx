@@ -1,7 +1,6 @@
 import { Col, message, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import deleteCookie from "../../helpers/deleteCookie";
 import {
   forbiddenResponse,
   responseError,

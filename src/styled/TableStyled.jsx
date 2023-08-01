@@ -21,5 +21,9 @@ const TableStyled = styled.div`
     background-color: #dcdcdc;
     pointer-events: none;
   }
+  .ant-checkbox-inner,
+  .ant-checkbox-input {
+    transform: scale(1.8);
+  }
 `;
 export default TableStyled;
