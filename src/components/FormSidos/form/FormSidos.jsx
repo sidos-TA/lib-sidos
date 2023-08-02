@@ -20,14 +20,14 @@ const FormSidos = ({
   deleteEndpoint,
   customFetch,
   endpoint,
-  payload,
+  payloadFetch,
+  payloadSubmit,
   payloadDelete,
   showSubmitBtn = false,
   BtnSubmitProps = {},
   beforeSubmit,
   debugSubmit = false,
   afterMessageActionClose,
-  afterFetchSuccesHandler,
   submitText = "Submit",
   deleteText = "Delete",
   ...props
@@ -51,15 +51,14 @@ const FormSidos = ({
 
     fetch({
       endpoint,
-      payload,
+      payload: {
+        ...payloadFetch,
+      },
     })
       ?.then((res) => {
         const response = responseSuccess(res);
 
         if (response?.status === 200) {
-          if (afterFetchSuccesHandler) {
-            afterFetchSuccesHandler(response?.data);
-          }
           if (customFetch) {
             customFetch(response?.data);
           } else {
@@ -118,7 +117,7 @@ const FormSidos = ({
       fetch({
         endpoint: endpointAction,
         payload: {
-          ...payload,
+          ...payloadSubmit,
           ...(deleteEndpoint && {
             ...payloadDelete,
           }),
@@ -183,7 +182,7 @@ const FormSidos = ({
     if (endpoint) {
       fetchDatas();
     }
-  }, [JSON.stringify(payload)]);
+  }, [JSON.stringify(payloadFetch)]);
 
   return (
     <>
