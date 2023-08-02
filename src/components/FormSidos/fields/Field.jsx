@@ -1,4 +1,5 @@
 import { Alert } from "antd";
+import CheckboxSidos from "./CheckboxSidos";
 import InputSidos from "./InputSidos";
 import NumberSidos from "./NumberSidos";
 import RadioSidos from "./RadioSidos";
@@ -27,6 +28,8 @@ const Field = ({ type, name, label, rules, required, ...props }) => {
       return <SwitchSidos {...fieldProps} {...props} />;
     case "upload":
       return <UploadSidos {...fieldProps} {...props} />;
+    case "checkbox":
+      return <CheckboxSidos {...fieldProps} {...props} />;
     default:
       return <Alert message="Tipe field tidak tersedia" type="warning" />;
   }

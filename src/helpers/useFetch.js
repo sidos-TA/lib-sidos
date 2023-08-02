@@ -3,10 +3,10 @@ import getCookie from "./getCookie";
 
 const useFetch = () => {
   const cookie = getCookie("token");
-  return async ({ endpoint, payload, ...config }) =>
+  return async ({ method = "post", endpoint, payload, ...config }) =>
     await axios({
       ...config,
-      method: "post",
+      method,
       url: `${import.meta.env.VITE_BASE_URL}${endpoint}`,
       ...(payload && {
         data: payload,
