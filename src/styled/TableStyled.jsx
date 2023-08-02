@@ -22,6 +22,7 @@ const TableStyled = styled.div`
     pointer-events: none;
   }
   .ant-checkbox-inner,
+  .ant-table-row-expand-icon,
   .ant-checkbox-input {
     transform: scale(1.8);
   }

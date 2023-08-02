@@ -1,5 +1,5 @@
-import { Space, Tooltip, Typography } from "antd";
-import { createRef, Fragment, useRef } from "react";
+import { Space, Typography } from "antd";
+import { Fragment } from "react";
 import { useState } from "react";
 import Field from "./Field";
 import { EditOutlined } from "@ant-design/icons";
@@ -12,7 +12,7 @@ const LabelSidos = ({
   onChange,
   defaultValue,
   labelProps,
-  rules,
+  rules = [],
   ...props
 }) => {
   const [editMode, setEditMode] = useState(false);

@@ -21,11 +21,14 @@ const Select = ({
   selectValue = "",
   listOptions = [],
   rules = [],
+  onChange,
+  onSelect,
   ...props
 }) => {
   const fetch = useFetch();
   const [state, setState] = useState({
     listOptions: [],
+    openDropdown: false,
   });
 
   const [messageApi, contextHolderMessage] = message.useMessage();
@@ -80,18 +83,36 @@ const Select = ({
         >
           {listOptions?.length ? (
             <SelectAntd
-              {...props}
               size="large"
               options={listOptions}
               showSearch
               popupMatchSelectWidth={false}
+              open={state?.openDropdown}
+              onBlur={() =>
+                setState((prev) => ({ ...prev, openDropdown: false }))
+              }
+              onFocus={() =>
+                setState((prev) => ({ ...prev, openDropdown: true }))
+              }
+              onChange={(val) => {
+                if (onChange) {
+                  onChange(val);
+                }
+                setState((prev) => ({ ...prev, openDropdown: false }));
+              }}
+              onSelect={(val) => {
+                if (onSelect) {
+                  onSelect(val);
+                }
+              }}
+              {...props}
             />
           ) : (
             <SelectAntd
-              {...props}
               size="large"
               showSearch
               popupMatchSelectWidth={false}
+              {...props}
             >
               {state?.listOptions?.map((item, idx) => (
                 <SelectAntd.Option
