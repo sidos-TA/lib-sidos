@@ -1,12 +1,8 @@
 import { Col, message, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  forbiddenResponse,
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../../helpers/formatRespons";
+import catchHandler from "../../helpers/catchHandler";
+import { responseSuccess } from "../../helpers/formatRespons";
 import useFetch from "../../helpers/useFetch";
 import TableStyled from "../../styled/TableStyled";
 import LoadingSidos from "../LoadingSidos";
@@ -56,18 +52,7 @@ const TableSidos = ({
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ err, messageApi });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ err, navigate });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "errMsg",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
       })
       ?.finally(() => {
         loadingFetchHandler(false);
@@ -87,7 +72,7 @@ const TableSidos = ({
         arrDatas: arrDatas?.map((data) => ({ ...data, key: data?.nip })),
       }));
     }
-  }, [JSON.stringify(arrDatas)]);
+  }, [JSON.stringify(arrDatas), JSON.stringify(payload)]);
 
   return (
     <>

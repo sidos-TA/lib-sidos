@@ -1,11 +1,9 @@
 import { message, Select as SelectAntd } from "antd";
 import { Fragment } from "react";
 import { memo, useEffect, useState } from "react";
-import {
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../../../helpers/formatRespons";
+import { useNavigate } from "react-router-dom";
+import catchHandler from "../../../helpers/catchHandler";
+import { responseSuccess } from "../../../helpers/formatRespons";
 import useFetch from "../../../helpers/useFetch";
 import SelectStyled from "../../../styled/SelectStyled";
 import FormItemSidos from "../form/FormItemSidos";
@@ -30,7 +28,7 @@ const Select = ({
     listOptions: [],
     openDropdown: false,
   });
-
+  const navigate = useNavigate();
   const [messageApi, contextHolderMessage] = message.useMessage();
 
   const fetchDatas = () => {
@@ -51,16 +49,7 @@ const Select = ({
         });
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "errMsg",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
       });
   };
 
@@ -87,18 +76,17 @@ const Select = ({
               options={listOptions}
               showSearch
               popupMatchSelectWidth={false}
-              open={state?.openDropdown}
-              onBlur={() =>
-                setState((prev) => ({ ...prev, openDropdown: false }))
-              }
-              onFocus={() =>
-                setState((prev) => ({ ...prev, openDropdown: true }))
-              }
+              // open={state?.openDropdown}
+              // onBlur={() =>
+              //   setState((prev) => ({ ...prev, openDropdown: false }))
+              // }
+              // onFocus={() =>
+              //   setState((prev) => ({ ...prev, openDropdown: true }))
+              // }
               onChange={(val) => {
                 if (onChange) {
                   onChange(val);
                 }
-                setState((prev) => ({ ...prev, openDropdown: false }));
               }}
               onSelect={(val) => {
                 if (onSelect) {
@@ -112,6 +100,16 @@ const Select = ({
               size="large"
               showSearch
               popupMatchSelectWidth={false}
+              onChange={(val) => {
+                if (onChange) {
+                  onChange(val);
+                }
+              }}
+              onSelect={(val) => {
+                if (onSelect) {
+                  onSelect(val);
+                }
+              }}
               {...props}
             >
               {state?.listOptions?.map((item, idx) => (

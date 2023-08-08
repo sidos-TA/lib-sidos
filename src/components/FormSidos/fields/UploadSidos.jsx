@@ -49,9 +49,6 @@ const UploadSidos = ({
     }
   };
 
-  // useEffect(() => {
-  //   console.log("sdsdsd");
-  // }, [JSON.stringify(form?.getFieldsValue())]);
   return (
     <>
       {contextHolder}

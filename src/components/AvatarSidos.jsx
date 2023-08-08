@@ -1,5 +1,4 @@
 import { Space, Typography } from "antd";
-import { fallbackImage } from "../constants";
 import BadgeSidos from "./BadgeSidos";
 import ImageSidos from "./ImageSidos";
 
@@ -9,6 +8,7 @@ const AvatarSidos = ({
   mainInfo,
   subInfo,
   src,
+  body,
 }) => {
   return (
     <Space direction="vertical" size="small" style={{ textAlign: "center" }}>
@@ -23,6 +23,7 @@ const AvatarSidos = ({
       </BadgeSidos>
       <Typography.Title level={5}>{mainInfo}</Typography.Title>
       <Typography.Text>{subInfo}</Typography.Text>
+      <Typography.Text strong>{body}</Typography.Text>
     </Space>
   );
 };

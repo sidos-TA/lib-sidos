@@ -1,10 +1,12 @@
 import { Alert } from "antd";
 import CheckboxSidos from "./CheckboxSidos";
+import DatePickerSidos from "./DatePickerSidos";
 import InputSidos from "./InputSidos";
 import NumberSidos from "./NumberSidos";
 import RadioSidos from "./RadioSidos";
 import SelectSidos from "./SelectSidos";
 import SwitchSidos from "./SwitchSidos";
+import TransferSidos from "./TransferSidos";
 import UploadSidos from "./UploadSidos";
 
 const Field = ({ type, name, label, rules, required, ...props }) => {
@@ -30,6 +32,10 @@ const Field = ({ type, name, label, rules, required, ...props }) => {
       return <UploadSidos {...fieldProps} {...props} />;
     case "checkbox":
       return <CheckboxSidos {...fieldProps} {...props} />;
+    case "date":
+      return <DatePickerSidos {...fieldProps} {...props} />;
+    case "transfer":
+      return <TransferSidos {...fieldProps} {...props} />;
     default:
       return <Alert message="Tipe field tidak tersedia" type="warning" />;
   }

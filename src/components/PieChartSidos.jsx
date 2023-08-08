@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { responseError, responseSuccess } from "../helpers/formatRespons";
+import { responseSuccess } from "../helpers/formatRespons";
 import useFetch from "../helpers/useFetch";
 import ReactFrappeChart from "react-frappe-charts";
 import LoadingSidos from "./LoadingSidos";
-import { Dropdown, Empty, Space } from "antd";
+import { Dropdown, Empty, message, Space } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import catchHandler from "../helpers/catchHandler";
+import { Fragment } from "react";
 
 const PieChartSidos = ({ endpoint, payload }) => {
   const fetch = useFetch();
@@ -14,9 +16,11 @@ const PieChartSidos = ({ endpoint, payload }) => {
     objDatas: {
       labels: [],
       datasets: [{ values: [] }],
+      colors: [],
     },
     loading: false,
   });
+  const [messageApi, contextHolder] = message.useMessage();
 
   const chartRef = useRef();
 
@@ -40,6 +44,7 @@ const PieChartSidos = ({ endpoint, payload }) => {
                 values: res?.data?.map((data) => data?.value),
               },
             ],
+            colors: res?.data?.map((dt) => dt?.color),
           };
 
           setState((prev) => ({
@@ -49,11 +54,7 @@ const PieChartSidos = ({ endpoint, payload }) => {
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-
-        if (err?.status == 403) {
-          navigate("/unauth");
-        }
+        catchHandler({ e, messageApi, navigate });
       })
       ?.finally(() => {
         setState((prev) => ({
@@ -73,49 +74,65 @@ const PieChartSidos = ({ endpoint, payload }) => {
     if (endpoint) {
       fetchDatas();
     }
-  }, [endpoint]);
+  }, [endpoint, JSON.stringify(payload)]);
 
   if (state?.loading) {
-    return <LoadingSidos />;
+    return (
+      <Fragment>
+        {contextHolder}
+
+        <LoadingSidos />
+      </Fragment>
+    );
   }
   if (state?.objDatas?.datasets?.[0]?.values?.every((data) => data === 0)) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    return (
+      <Fragment>
+        {contextHolder}
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      </Fragment>
+    );
   } else {
     return (
-      <div style={{ textAlign: "right" }}>
-        <Dropdown
-          placement="bottomRight"
-          menu={{
-            items: [
-              {
-                label: "Download",
-                key: "download",
-                onClick: () => exportChart(),
-              },
-            ],
-          }}
-          trigger={["click"]}
-        >
-          <a onClick={(e) => e.preventDefault()}>
-            <Space>
-              <EllipsisOutlined
-                style={{
-                  rotate: "90deg",
-                  fontSize: 28,
-                }}
-              />
-            </Space>
-          </a>
-        </Dropdown>
+      <Fragment>
+        {contextHolder}
 
-        <ReactFrappeChart
-          ref={chartRef}
-          type="pie"
-          height={500}
-          axisOptions={{ xAxisMode: "tick", yAxisMode: "tick", xIsSeries: 1 }}
-          data={state?.objDatas}
-        />
-      </div>
+        <div style={{ textAlign: "right" }}>
+          <Dropdown
+            placement="bottomRight"
+            menu={{
+              items: [
+                {
+                  label: "Download",
+                  key: "download",
+                  onClick: () => exportChart(),
+                },
+              ],
+            }}
+            trigger={["click"]}
+          >
+            <a onClick={(e) => e.preventDefault()}>
+              <Space>
+                <EllipsisOutlined
+                  style={{
+                    rotate: "90deg",
+                    fontSize: 28,
+                  }}
+                />
+              </Space>
+            </a>
+          </Dropdown>
+
+          <ReactFrappeChart
+            ref={chartRef}
+            type="pie"
+            height={500}
+            axisOptions={{ xAxisMode: "tick", yAxisMode: "tick", xIsSeries: 1 }}
+            data={state?.objDatas}
+            colors={state?.objDatas?.colors}
+          />
+        </div>
+      </Fragment>
     );
   }
 };

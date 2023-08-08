@@ -1,13 +1,14 @@
 import { styled } from "styled-components";
 
 const FieldWrapper = styled.div`
-  .ant-input {
-    padding: 12px;
-    font-size: 18px;
-  }
+  .ant-input,
   .ant-select-selector {
     padding: 12px;
     font-size: 18px;
+  }
+  .ant-picker {
+    padding: 7px;
+    width: 100%;
   }
 `;
 

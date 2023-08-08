@@ -3,6 +3,8 @@ import { Fragment } from "react";
 import { useState } from "react";
 import Field from "./Field";
 import { EditOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import getYearNow from "../../../constants/getYearNow";
 
 const LabelSidos = ({
   isEditable,
@@ -13,12 +15,29 @@ const LabelSidos = ({
   defaultValue,
   labelProps,
   rules = [],
+  position,
   ...props
 }) => {
   const [editMode, setEditMode] = useState(false);
 
+  const defaultValueHandler = () => {
+    if (type === "date") {
+      return dayjs(String(defaultValue || getYearNow), "YYYY");
+    }
+    return defaultValue;
+  };
+
   return (
-    <Space direction="vertical" style={{ marginBottom: 20 }}>
+    <Space
+      direction="vertical"
+      style={{
+        marginBottom: 20,
+        ...(position && {
+          textAlign: position,
+          width: "100%",
+        }),
+      }}
+    >
       {editMode ? (
         <Field
           autoFocus
@@ -28,7 +47,7 @@ const LabelSidos = ({
           onChange={(value) => {
             onChange(value);
           }}
-          defaultValue={defaultValue}
+          defaultValue={defaultValueHandler()}
           {...(type === "select" && {
             onInputKeyDown: (e) => {
               if (e?.code === "Enter") {

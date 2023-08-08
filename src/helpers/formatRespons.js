@@ -24,7 +24,7 @@ const responseError = (res) => {
 const unAuthResponse = ({ messageApi, err, isBackToLogin = true }) => {
   const { pathname } = window.location;
   messageApi?.open({
-    key: "err_api",
+    key: `${Date.now()}_error_auth`,
     type: "error",
     content: err?.error,
     ...(err?.status === 401 && {

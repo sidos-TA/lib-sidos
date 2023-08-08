@@ -3,12 +3,8 @@ import { Fragment } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormContext from "../../../context/FormContext";
-import {
-  forbiddenResponse,
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../../../helpers/formatRespons";
+import catchHandler from "../../../helpers/catchHandler";
+import { responseSuccess } from "../../../helpers/formatRespons";
 import useFetch from "../../../helpers/useFetch";
 import BtnSidos from "../../BtnSidos";
 import LoadingSidos from "../../LoadingSidos";
@@ -39,6 +35,7 @@ const FormSidos = ({
     isDisabled: false,
     isLoadingSubmitForm: false,
     isRefetch: false,
+    isOpenModalConfirm: true,
   });
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, contextHolderModal] = Modal.useModal();
@@ -67,28 +64,7 @@ const FormSidos = ({
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ err, messageApi });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ navigate, err });
-        } else if (err?.status === 404) {
-          messageApi.open({
-            type: "error",
-            key: "send",
-            content: err?.error,
-            onClose: () => {
-              navigate(-1);
-            },
-            duration: 0.5,
-          });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "send",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
       })
       ?.finally(() => {
         setState((prev) => ({
@@ -105,10 +81,16 @@ const FormSidos = ({
       const beforeSubmitData = beforeSubmit();
       formDatas = beforeSubmitData;
     }
-
     if (debugSubmit) {
       // eslint-disable-next-line no-console
-      console.log("beforeSubmit : ", formDatas);
+      console.log("beforeSubmit : ", {
+        submitEndpoint,
+        ...formDatas,
+        ...(deleteEndpoint && {
+          ...payloadDelete,
+        }),
+        ...payloadSubmit,
+      });
     } else {
       setState((prev) => ({
         ...prev,
@@ -117,11 +99,11 @@ const FormSidos = ({
       fetch({
         endpoint: endpointAction,
         payload: {
-          ...payloadSubmit,
+          ...formDatas,
           ...(deleteEndpoint && {
             ...payloadDelete,
           }),
-          ...formDatas,
+          ...payloadSubmit,
         },
       })
         ?.then((res) => {
@@ -136,38 +118,18 @@ const FormSidos = ({
                 if (afterMessageActionClose) {
                   afterMessageActionClose(response);
                 } else {
-                  navigate(-1);
+                  navigate("/");
                 }
               },
             });
           }
         })
         ?.catch((e) => {
-          const err = responseError(e);
-
-          if (err?.status === 401) {
-            unAuthResponse({ err, messageApi });
-            setState((prev) => ({
-              ...prev,
-              isLoadingSubmitForm: false,
-            }));
-          } else {
-            messageApi.open({
-              type: "error",
-              key: "error_submit_form",
-              content:
-                typeof err?.error === "object"
-                  ? "Terjadi kesalahan"
-                  : err?.error,
-              onClose: () => {
-                setState((prev) => ({
-                  ...prev,
-                  isLoadingSubmitForm: false,
-                }));
-              },
-              duration: 1,
-            });
-          }
+          catchHandler({ e, messageApi, navigate });
+          setState((prev) => ({
+            ...prev,
+            isLoadingSubmitForm: false,
+          }));
         });
       // ?.finally(() => {
       //   setState((prev) => ({
