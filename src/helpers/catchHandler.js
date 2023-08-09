@@ -30,7 +30,7 @@ const catchHandler = ({ e, messageApi, navigate }) => {
       messageApi.open({
         type: "error",
         key: `${Date.now()}_error_key`,
-        content: err?.error,
+        content: err?.error || "Error",
       });
     }
   }
