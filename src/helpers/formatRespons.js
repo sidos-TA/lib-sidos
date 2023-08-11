@@ -13,11 +13,17 @@ const responseSuccess = (res, isMessage = false) => {
 };
 
 const responseError = (res) => {
-  if (res?.status !== 200) {
+  if (res?.response?.config?.responseType === "blob") {
     return {
-      error: res?.response?.data?.error,
-      status: res?.response?.data?.status,
+      status: res?.response?.status,
     };
+  } else {
+    if (res?.status !== 200) {
+      return {
+        error: res?.response?.data?.error,
+        status: res?.response?.data?.status,
+      };
+    }
   }
 };
 

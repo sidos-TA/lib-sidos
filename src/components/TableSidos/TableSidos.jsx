@@ -1,10 +1,14 @@
+import { FileExcelFilled } from "@ant-design/icons";
 import { Col, message, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FilterSemester from "../../../../components/FilterSemester";
 import catchHandler from "../../helpers/catchHandler";
 import { responseSuccess } from "../../helpers/formatRespons";
+import useDownloads from "../../helpers/useDownloads";
 import useFetch from "../../helpers/useFetch";
 import TableStyled from "../../styled/TableStyled";
+import BtnSidos from "../BtnSidos";
 import LoadingSidos from "../LoadingSidos";
 
 const TableSidos = ({
@@ -15,15 +19,24 @@ const TableSidos = ({
   arrDatas = [],
   isLoading = false,
   customFetch,
+  excelOptions = {
+    endpoint: "",
+    fileName: "Data",
+  },
+  useFilterSemester = false,
+
   ...props
 }) => {
   const fetch = useFetch();
   const [state, setState] = useState({
     arrDatas: [],
     loading: false,
+    arrColumnDatas: [],
+    loadingExcel: false,
   });
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
+  const [payloadSemester, setPayloadSemester] = useState();
 
   const loadingFetchHandler = (loading) =>
     setState((prev) => ({
@@ -35,7 +48,10 @@ const TableSidos = ({
     loadingFetchHandler(true);
     fetch({
       endpoint,
-      payload,
+      payload: {
+        ...payload,
+        ...payloadSemester,
+      },
     })
       ?.then((res) => {
         const responses = responseSuccess(res);
@@ -59,11 +75,23 @@ const TableSidos = ({
       });
   };
 
+  const { loading, downloadHandler } = useDownloads({
+    endpoint: excelOptions?.endpoint,
+    filename: excelOptions?.fileName,
+    messageApi,
+    payload: payloadSemester,
+  });
+
+  const exportToExcel = () => {
+    setState((prev) => ({ ...prev, loadingExcel: true }));
+    downloadHandler();
+  };
+
   useEffect(() => {
     if (endpoint) {
       fetchDatas();
     }
-  }, [endpoint, JSON.stringify(payload)]);
+  }, [endpoint, JSON.stringify(payload), JSON.stringify(payloadSemester)]);
 
   useEffect(() => {
     if (arrDatas?.length) {
@@ -72,26 +100,53 @@ const TableSidos = ({
         arrDatas: arrDatas?.map((data) => ({ ...data, key: data?.nip })),
       }));
     }
-  }, [JSON.stringify(arrDatas), JSON.stringify(payload)]);
+  }, [
+    JSON.stringify(arrDatas),
+    JSON.stringify(payload),
+    JSON.stringify(payloadSemester),
+  ]);
 
   return (
     <>
       {contextHolder}
       <TableStyled>
         <Space direction="vertical" size="large">
-          {customFilter?.length ? (
-            <Row gutter={8} wrap>
-              {customFilter?.map((eleFilter, idx) => {
-                return (
-                  <Col span={24 / customFilter?.length} key={idx}>
-                    {eleFilter}
-                  </Col>
-                );
-              })}
-            </Row>
+          {useFilterSemester ? (
+            <FilterSemester
+              payloadState={payloadSemester}
+              setStatePayload={setPayloadSemester}
+            />
           ) : (
             <Fragment />
           )}
+          <Row gutter={8} align="middle">
+            <Col span={20}>
+              {customFilter?.length ? (
+                <Row gutter={8}>
+                  {customFilter?.map((eleFilter, idx) => {
+                    return (
+                      <Col span={24 / customFilter?.length} key={idx}>
+                        {eleFilter}
+                      </Col>
+                    );
+                  })}
+                </Row>
+              ) : (
+                <Fragment />
+              )}
+            </Col>
+            {excelOptions?.endpoint && (
+              <Col span={4}>
+                <BtnSidos
+                  icon={<FileExcelFilled style={{ color: "green" }} />}
+                  loading={loading}
+                  onClick={() => exportToExcel()}
+                >
+                  Export Excel
+                </BtnSidos>
+              </Col>
+            )}
+          </Row>
 
           {state?.loading || isLoading ? (
             <LoadingSidos style={{ height: "50vh", width: "100vh" }} />

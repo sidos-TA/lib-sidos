@@ -18,7 +18,7 @@ const catchHandler = ({ e, messageApi, navigate }) => {
     messageApi.open({
       type: "error",
       key: `${Date.now()}_error`,
-      content: err?.error,
+      content: err?.error || "Data tidak ada",
       onClose: () => {
         navigate(basePathName);
       },
