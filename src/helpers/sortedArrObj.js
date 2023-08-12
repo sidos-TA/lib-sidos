@@ -1,10 +1,9 @@
-const sortedArrObj = ({ arrDatas, key }) => {
+const sortedArrObj = ({ arrDatas, key, sortType = "ASC" }) => {
   return arrDatas.sort((a, b) => {
-    if (a?.[key] < b?.[key]) {
-      return 1;
-    }
     if (a?.[key] > b?.[key]) {
-      return -1;
+      return sortType === "ASC" ? 1 : -1;
+    } else if (a?.[key] < b?.[key]) {
+      return sortType === "ASC" ? -1 : 1;
     }
     return 0;
   });

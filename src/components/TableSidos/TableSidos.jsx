@@ -24,7 +24,7 @@ const TableSidos = ({
     fileName: "Data",
   },
   useFilterSemester = false,
-
+  extraButton = [],
   ...props
 }) => {
   const fetch = useFetch();
@@ -120,7 +120,7 @@ const TableSidos = ({
             <Fragment />
           )}
           <Row gutter={8} align="middle">
-            <Col span={20}>
+            <Col span={18}>
               {customFilter?.length ? (
                 <Row gutter={8}>
                   {customFilter?.map((eleFilter, idx) => {
@@ -135,8 +135,20 @@ const TableSidos = ({
                 <Fragment />
               )}
             </Col>
+            <Col span={4}>
+              {extraButton?.length ? (
+                <Space>
+                  {extraButton?.map((btn, idx) => (
+                    <Fragment key={idx}>{btn}</Fragment>
+                  ))}
+                </Space>
+              ) : (
+                <Fragment />
+              )}
+            </Col>
+
             {excelOptions?.endpoint && (
-              <Col span={4}>
+              <Col span={2}>
                 <BtnSidos
                   icon={<FileExcelFilled style={{ color: "green" }} />}
                   loading={loading}

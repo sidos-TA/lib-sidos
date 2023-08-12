@@ -112,7 +112,7 @@ const FormSidos = ({
             messageApi.open({
               type: "success",
               key: "submit_form",
-              content: response?.data || response?.message,
+              content: response?.message,
               duration: 0.8,
               onClose: () => {
                 if (afterMessageActionClose) {
