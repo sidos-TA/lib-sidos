@@ -116,8 +116,10 @@ const Select = ({
                 <SelectAntd.Option
                   key={`${item}${idx}`}
                   value={item?.value}
-                  label={item?.label}
-                />
+                  // label={item?.label}
+                >
+                  {item?.label}
+                </SelectAntd.Option>
               ))}
             </SelectAntd>
           )}

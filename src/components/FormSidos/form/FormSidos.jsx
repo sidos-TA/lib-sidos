@@ -26,6 +26,8 @@ const FormSidos = ({
   afterMessageActionClose,
   submitText = "Submit",
   deleteText = "Delete",
+  isBack404Fetch = true,
+  isBack404Submit = true,
   ...props
 }) => {
   const fetch = useFetch();
@@ -64,7 +66,7 @@ const FormSidos = ({
         }
       })
       ?.catch((e) => {
-        catchHandler({ e, messageApi, navigate });
+        catchHandler({ e, messageApi, navigate, isBack404: isBack404Fetch });
       })
       ?.finally(() => {
         setState((prev) => ({
@@ -125,7 +127,7 @@ const FormSidos = ({
           }
         })
         ?.catch((e) => {
-          catchHandler({ e, messageApi, navigate });
+          catchHandler({ e, messageApi, navigate, isBack404: isBack404Submit });
           setState((prev) => ({
             ...prev,
             isLoadingSubmitForm: false,

@@ -1,5 +1,5 @@
 import { FileExcelFilled } from "@ant-design/icons";
-import { Col, message, Row, Space, Table } from "antd";
+import { Button, Col, message, Pagination, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterSemester from "../../../../components/FilterSemester";
@@ -25,6 +25,7 @@ const TableSidos = ({
   },
   useFilterSemester = false,
   extraButton = [],
+  usePaginateBE = false,
   ...props
 }) => {
   const fetch = useFetch();
@@ -33,6 +34,8 @@ const TableSidos = ({
     loading: false,
     arrColumnDatas: [],
     loadingExcel: false,
+    page: 1,
+    countAllDatas: 1,
   });
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -51,6 +54,9 @@ const TableSidos = ({
       payload: {
         ...payload,
         ...payloadSemester,
+        ...(usePaginateBE && {
+          page: state?.page,
+        }),
       },
     })
       ?.then((res) => {
@@ -63,6 +69,7 @@ const TableSidos = ({
             setState((prev) => ({
               ...prev,
               arrDatas: responses?.data?.map((data, key) => ({ ...data, key })),
+              countAllDatas: responses?.countAllDatas,
             }));
           }
         }
@@ -79,7 +86,7 @@ const TableSidos = ({
     endpoint: excelOptions?.endpoint,
     filename: excelOptions?.fileName,
     messageApi,
-    payload: payloadSemester,
+    payload: { ...payloadSemester },
   });
 
   const exportToExcel = () => {
@@ -91,7 +98,12 @@ const TableSidos = ({
     if (endpoint) {
       fetchDatas();
     }
-  }, [endpoint, JSON.stringify(payload), JSON.stringify(payloadSemester)]);
+  }, [
+    endpoint,
+    state?.page,
+    JSON.stringify(payload),
+    JSON.stringify(payloadSemester),
+  ]);
 
   useEffect(() => {
     if (arrDatas?.length) {
@@ -120,8 +132,8 @@ const TableSidos = ({
             <Fragment />
           )}
           <Row gutter={8} align="middle">
-            <Col span={18}>
-              {customFilter?.length ? (
+            {customFilter?.length ? (
+              <Col span={18}>
                 <Row gutter={8}>
                   {customFilter?.map((eleFilter, idx) => {
                     return (
@@ -131,10 +143,10 @@ const TableSidos = ({
                     );
                   })}
                 </Row>
-              ) : (
-                <Fragment />
-              )}
-            </Col>
+              </Col>
+            ) : (
+              <Fragment />
+            )}
             <Col span={4}>
               {extraButton?.length ? (
                 <Space>
@@ -149,13 +161,11 @@ const TableSidos = ({
 
             {excelOptions?.endpoint && (
               <Col span={2}>
-                <BtnSidos
+                <Button
                   icon={<FileExcelFilled style={{ color: "green" }} />}
                   loading={loading}
                   onClick={() => exportToExcel()}
-                >
-                  Export Excel
-                </BtnSidos>
+                />
               </Col>
             )}
           </Row>
@@ -163,11 +173,38 @@ const TableSidos = ({
           {state?.loading || isLoading ? (
             <LoadingSidos style={{ height: "50vh", width: "100vh" }} />
           ) : (
-            <Table bordered {...props} dataSource={state?.arrDatas}>
+            <Table
+              bordered
+              {...props}
+              dataSource={state?.arrDatas}
+              pagination={
+                usePaginateBE
+                  ? false
+                  : {
+                      pageSize: 10,
+                      hideOnSinglePage: true,
+                    }
+              }
+            >
               {children}
             </Table>
           )}
         </Space>
+        {usePaginateBE && (
+          <Row style={{ textAlign: "right" }}>
+            <Col span={24}>
+              <Pagination
+                current={state?.page}
+                total={state?.countAllDatas}
+                pageSize={10}
+                hideOnSinglePage
+                onChange={(val) => {
+                  setState((prev) => ({ ...prev, page: val }));
+                }}
+              />
+            </Col>
+          </Row>
+        )}
       </TableStyled>
     </>
   );

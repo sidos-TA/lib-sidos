@@ -16,14 +16,19 @@ const AvatarSidos = ({
         <ImageSidos
           style={{ borderRadius: 500 }}
           width={280}
-          // preview={false}
+          height={280}
           src={src}
-          // src={fallbackImage}
         />
       </BadgeSidos>
       <Typography.Title level={5}>{mainInfo}</Typography.Title>
       <Typography.Text>{subInfo}</Typography.Text>
-      <Typography.Text strong>{body}</Typography.Text>
+      <Typography.Text
+        strong
+        ellipsis={{ tooltip: body }}
+        style={{ width: 200 }}
+      >
+        {body}
+      </Typography.Text>
     </Space>
   );
 };

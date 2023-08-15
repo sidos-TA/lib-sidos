@@ -16,6 +16,7 @@ const LabelSidos = ({
   labelProps,
   rules = [],
   position,
+  isLink = false,
   ...props
 }) => {
   const [editMode, setEditMode] = useState(false);
@@ -26,6 +27,8 @@ const LabelSidos = ({
     }
     return defaultValue;
   };
+
+  const TypghographyWrapper = isLink ? Typography.Link : Typography.Text;
 
   return (
     <Space
@@ -74,7 +77,7 @@ const LabelSidos = ({
             </span>
           </label>
           <Space>
-            <Typography.Text
+            <TypghographyWrapper
               {...(isEditable && {
                 onClick: () => {
                   setEditMode(true);
@@ -83,7 +86,7 @@ const LabelSidos = ({
               {...labelProps}
             >
               {children}
-            </Typography.Text>
+            </TypghographyWrapper>
             {isEditable && (
               <EditOutlined
                 onClick={() => {

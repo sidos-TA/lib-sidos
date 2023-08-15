@@ -6,6 +6,7 @@ const ImageSidos = ({ src, width = 250, preview, ...props }) => {
   return (
     <ImageStyled>
       <Image
+        loading="lazy"
         style={{
           borderRadius: "100%",
           border: `1px solid ${src ? "#1677ff" : "#4a4a4a"} `,
