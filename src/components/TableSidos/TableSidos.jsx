@@ -8,7 +8,6 @@ import { responseSuccess } from "../../helpers/formatRespons";
 import useDownloads from "../../helpers/useDownloads";
 import useFetch from "../../helpers/useFetch";
 import TableStyled from "../../styled/TableStyled";
-import BtnSidos from "../BtnSidos";
 import LoadingSidos from "../LoadingSidos";
 
 const TableSidos = ({
