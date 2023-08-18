@@ -76,6 +76,11 @@ const Select = ({
               options={listOptions}
               showSearch
               popupMatchSelectWidth={false}
+              filterOption={(input, option) => {
+                return ((option?.label || option?.value) ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase());
+              }}
               // open={state?.openDropdown}
               // onBlur={() =>
               //   setState((prev) => ({ ...prev, openDropdown: false }))
@@ -110,13 +115,18 @@ const Select = ({
                   onSelect(val);
                 }
               }}
+              filterOption={(input, option) => {
+                return ((option?.label || option?.value) ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase());
+              }}
               {...props}
             >
               {state?.listOptions?.map((item, idx) => (
                 <SelectAntd.Option
                   key={`${item}${idx}`}
                   value={item?.value}
-                  // label={item?.label}
+                  label={item?.label}
                 >
                   {item?.label}
                 </SelectAntd.Option>

@@ -6,6 +6,7 @@ import NumberSidos from "./NumberSidos";
 import RadioSidos from "./RadioSidos";
 import SelectSidos from "./SelectSidos";
 import SwitchSidos from "./SwitchSidos";
+import TextAreaSidos from "./TextAreaSidos";
 import TransferSidos from "./TransferSidos";
 import UploadSidos from "./UploadSidos";
 
@@ -20,6 +21,8 @@ const Field = ({ type, name, label, rules, required, ...props }) => {
   switch (type) {
     case "text":
       return <InputSidos {...fieldProps} {...props} />;
+    case "textarea":
+      return <TextAreaSidos {...fieldProps} {...props} />;
     case "number":
       return <NumberSidos {...fieldProps} {...props} />;
     case "select":
