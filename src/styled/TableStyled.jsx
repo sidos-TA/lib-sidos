@@ -19,7 +19,7 @@ const TableStyled = styled.div`
   }
   .disabled-row {
     background-color: #dcdcdc;
-    pointer-events: none;
+    /* pointer-events: none; */
   }
   .ant-checkbox-inner,
   .ant-table-row-expand-icon,

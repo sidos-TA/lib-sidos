@@ -17,6 +17,7 @@ const LabelSidos = ({
   rules = [],
   position,
   isLink = false,
+  required = false,
   ...props
 }) => {
   const [editMode, setEditMode] = useState(false);
@@ -47,6 +48,7 @@ const LabelSidos = ({
           label={label}
           rules={rules}
           type={type}
+          required={required}
           onChange={(value) => {
             onChange(value);
           }}

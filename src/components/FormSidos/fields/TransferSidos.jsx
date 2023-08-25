@@ -86,6 +86,8 @@ const TransferComponents = ({
           {...formItemObj}
         >
           <Transfer
+          showSearch
+          
             dataSource={arrDatas}
             titles={["Dosen", "Kaprodi"]}
             targetKeys={targetKeys}

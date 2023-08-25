@@ -25,6 +25,7 @@ const TableSidos = ({
   useFilterSemester = false,
   extraButton = [],
   usePaginateBE = false,
+  pageSize = 10,
   ...props
 }) => {
   const fetch = useFetch();
@@ -130,7 +131,7 @@ const TableSidos = ({
           ) : (
             <Fragment />
           )}
-          <Row gutter={8} align="middle">
+          <Row gutter={8} align="middle" justify="space-between">
             {customFilter?.length ? (
               <Col span={18}>
                 <Row gutter={8}>
@@ -173,15 +174,16 @@ const TableSidos = ({
             <LoadingSidos style={{ height: "50vh", width: "100vh" }} />
           ) : (
             <Table
-              bordered
+              // bordered
               {...props}
               dataSource={state?.arrDatas}
               pagination={
                 usePaginateBE
                   ? false
                   : {
-                      pageSize: 10,
+                      pageSize,
                       hideOnSinglePage: true,
+                      showSizeChanger: false,
                     }
               }
             >
@@ -197,6 +199,7 @@ const TableSidos = ({
                 total={state?.countAllDatas}
                 pageSize={10}
                 hideOnSinglePage
+                showSizeChanger={false}
                 onChange={(val) => {
                   setState((prev) => ({ ...prev, page: val }));
                 }}
