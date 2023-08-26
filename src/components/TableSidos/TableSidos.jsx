@@ -2,12 +2,13 @@ import { FileExcelFilled } from "@ant-design/icons";
 import { Button, Col, message, Pagination, Row, Space, Table } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FilterSemester from "../../../../components/FilterSemester";
+// import FilterSemester from "../../../../components/FilterSemester";
 import catchHandler from "../../helpers/catchHandler";
 import { responseSuccess } from "../../helpers/formatRespons";
 import useDownloads from "../../helpers/useDownloads";
 import useFetch from "../../helpers/useFetch";
 import TableStyled from "../../styled/TableStyled";
+import FilterSemesterSidos from "../FilterSemesterSidos";
 import LoadingSidos from "../LoadingSidos";
 
 const TableSidos = ({
@@ -124,7 +125,7 @@ const TableSidos = ({
       <TableStyled>
         <Space direction="vertical" size="large">
           {useFilterSemester ? (
-            <FilterSemester
+            <FilterSemesterSidos
               payloadState={payloadSemester}
               setStatePayload={setPayloadSemester}
             />
